@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mariadb:10.6
+    container_name: vintageauto_db
+    restart: always
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: user
+      MARIADB_PASSWORD: password
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:latest
+    container_name: vintageauto_wp
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: password
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: vintageauto_pma
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+volumes:
+  volumes:
+  - ./wp-content:/var/www/html/wp-content
